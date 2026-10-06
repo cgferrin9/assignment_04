@@ -48,7 +48,39 @@ def parse_hours(value) -> float:
     - The mistake people make: forgetting the `/ 60`. `"45m"` is three quarters
       of an hour, not 45 hours, and `test_parse_hours` will tell you.
     """
-    # TODO: your code here
+    # TODO: 
+    #your code here
+    if pd.isna(value):
+        return 0.0
+
+    if not isinstance(value, str):
+        return float(value)
+
+    text = value.strip()
+
+    if text == "":
+        return 0.0
+
+    if "h" not in text and "m" not in text:
+        try:
+            return float(text)
+        except ValueError:
+            return 0.0
+
+    hours = 0.0
+
+    for word in text.split():
+        try:
+            if word[-1] == "h":
+                hours = hours + float(word[:-1])
+
+            elif word[-1] == "m":
+                hours = hours + (float(word[:-1]) / 60)
+
+        except ValueError:
+            return 0.0
+
+    return hours
     pass
 
 
@@ -72,7 +104,20 @@ def clean_currency(value) -> float:
     - You wrote this function in Assignment 02. It is the same function. That
       is not an accident — cleaning currency is something every pipeline does.
     """
-    # TODO: your code here
+    # TODO:
+    # your code here
+    if pd.isna(value):
+        return 0.0
+
+    if not isinstance(value, str):
+        return float(value)
+
+    text = value.replace("$", "").replace(",", "").strip()
+
+    try:
+        return float(text)
+    except ValueError:
+        return 0.0
     pass
 
 
@@ -92,6 +137,11 @@ def add_hours_worked(timesheet: pd.DataFrame) -> pd.DataFrame:
       shape: copy, add a column, return.
     """
     # TODO: your code here
+    out = timesheet.copy()
+
+    out["hours_worked"] = out["hours"].apply(parse_hours)
+
+    return out
     pass
 
 
@@ -105,6 +155,11 @@ def add_hourly_rate(employees: pd.DataFrame) -> pd.DataFrame:
     function and the other column names.
     """
     # TODO: your code here
+    out = employees.copy()
+
+    out["hourly_rate_usd"] = out["hourly_rate"].apply(clean_currency)
+
+    return out
     pass
 
 
