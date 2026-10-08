@@ -38,3 +38,72 @@ Test it: pytest tests/test_pipeline.py -k app
 #
 # What the page does NOT do: arithmetic on rows, cleaning, merging. If you find
 # yourself writing a loop or an apply here, that logic belongs in the package.
+
+import pandas as pd
+import streamlit as st
+
+from payroll import load_employees, build_payroll, payroll_export
+
+
+st.title("Salt City Coffee - Weekly Payroll")
+
+uploaded_file = st.file_uploader(
+    "Upload weekly timesheet (CSV)",
+    type="csv",
+    key="timesheet"
+)
+
+if uploaded_file is not None:
+
+    # Load the data
+    timesheet = pd.read_csv(uploaded_file)
+    employees = load_employees()
+
+    # Build the payroll
+    payroll = build_payroll(timesheet, employees)
+
+    # Get the payroll date
+    payroll_date = payroll["payroll_date"].iloc[0]
+
+    st.header(f"Pay period ending {payroll_date}")
+
+    # Calculate totals
+    matched = payroll[payroll["pay_type"] != "unmatched"]
+
+    employees_paid = len(matched)
+    total_hours = payroll["hours_worked"].sum()
+    total_pay = matched["gross_pay"].sum()
+    overtime_weeks = len(payroll[payroll["pay_type"] == "overtime"])
+
+    # Display metrics
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Employees paid", employees_paid)
+    col2.metric("Total hours", total_hours)
+    col3.metric("Total gross pay", f"${total_pay:,.2f}")
+    col4.metric("Overtime weeks", overtime_weeks)
+
+    # Check for unmatched employees
+    unmatched = payroll[payroll["pay_type"] == "unmatched"]
+
+    if len(unmatched) > 0:
+        ids = unmatched["employee_id"].tolist()
+        st.warning(f"Unmatched employee IDs: {', '.join(ids)}")
+    else:
+        st.success("All employee IDs matched.")
+
+    # Show full payroll
+    st.header("Payroll table")
+    st.dataframe(payroll)
+
+    # Create provider export
+    export = payroll_export(payroll)
+    csv = export.to_csv(index=False)
+
+    st.download_button(
+        "Download payroll CSV for the provider",
+        data=csv,
+        file_name=f"payroll_{payroll_date}.csv",
+        mime="text/csv",
+        key="download"
+    )
