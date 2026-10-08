@@ -42,8 +42,7 @@ Test it: pytest tests/test_pipeline.py -k app
 import pandas as pd
 import streamlit as st
 
-from payroll import load_employees, build_payroll, payroll_export
-
+from payroll import load_employees, load_timesheet, build_payroll, payroll_export
 
 st.title("Salt City Coffee - Weekly Payroll")
 
@@ -56,7 +55,7 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
 
     # Load the data
-    timesheet = pd.read_csv(uploaded_file)
+    timesheet = load_timesheet(uploaded_file)
     employees = load_employees()
 
     # Build the payroll
