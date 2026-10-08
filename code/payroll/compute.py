@@ -47,7 +47,6 @@ def calc_gross_pay(hours: float, rate: float) -> float:
     return round(pay, 2)
 
 
-
 def classify_pay(hours: float, rate: float) -> str:
     """One word the office manager can filter on: what kind of pay row is this?
 
@@ -64,7 +63,6 @@ def classify_pay(hours: float, rate: float) -> str:
         return "overtime"
     else:
         return "regular"
-
 
 
 def add_gross_pay(payroll: pd.DataFrame) -> pd.DataFrame:
@@ -96,6 +94,7 @@ def add_pay_type(payroll: pd.DataFrame) -> pd.DataFrame:
 
     return out
 
+
 def build_payroll(timesheet: pd.DataFrame, employees: pd.DataFrame) -> pd.DataFrame:
     """The whole pipeline in one call: raw timesheet + raw roster -> payroll table.
 
@@ -113,7 +112,6 @@ def build_payroll(timesheet: pd.DataFrame, employees: pd.DataFrame) -> pd.DataFr
     payroll = add_pay_type(payroll)
 
     return payroll
-    
 
 
 def payroll_export(payroll: pd.DataFrame) -> pd.DataFrame:
@@ -131,7 +129,7 @@ def payroll_export(payroll: pd.DataFrame) -> pd.DataFrame:
     Build it as a new DataFrame from the columns you want — do not rename the
     pipeline's columns. The pipeline table keeps its lineage; the export is a
     view of it shaped for someone else's system.
-    """    
+    """
     matched = payroll[payroll["pay_type"] != "unmatched"]
 
     export = pd.DataFrame({

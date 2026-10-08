@@ -48,8 +48,8 @@ def parse_hours(value) -> float:
     - The mistake people make: forgetting the `/ 60`. `"45m"` is three quarters
       of an hour, not 45 hours, and `test_parse_hours` will tell you.
     """
-   
-    #your code here
+
+    # your code here
     if pd.isna(value):
         return 0.0
 
@@ -142,7 +142,6 @@ def add_hours_worked(timesheet: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-
 def add_hourly_rate(employees: pd.DataFrame) -> pd.DataFrame:
     """Return a copy of the roster with one new column, `hourly_rate_usd` (float).
 
@@ -158,7 +157,6 @@ def add_hourly_rate(employees: pd.DataFrame) -> pd.DataFrame:
     out["hourly_rate_usd"] = out["hourly_rate"].apply(clean_currency)
 
     return out
-
 
 
 if __name__ == "__main__":
